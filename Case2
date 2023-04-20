@@ -1,0 +1,162 @@
+package org.example;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.util.List;
+
+public class FacebookTestCase2farapix {
+
+    public static void main(String[] args) throws InterruptedException {
+
+        // Set the path to the chromedriver executable
+        System.setProperty("webdriver.chrome.driver", "D:\\Downloads\\chromedriver_win32 (1)\\chromedriver.exe");
+
+        // Create ChromeOptions instance and disable notifications
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--disable-notifications");
+
+        // Create a new instance of the ChromeDriver with options
+        WebDriver driver = new ChromeDriver(options);
+
+        // Navigate to the Facebook website
+        driver.get("https://www.facebook.com/");
+
+        // Find the cookie notification and click the "Accept" or "Okay" button
+        List<WebElement> cookieNotifications = driver.findElements(By.xpath("//button[@title='Tillåt endast nödvändiga cookies']"));
+        if (cookieNotifications.size() > 0) {
+            cookieNotifications.get(0).click();
+            System.out.println("Clicked on the cookie notification button");
+        } else {
+            System.out.println("No cookie notification found on the page");
+        }
+
+        // Test case 2: Posting functionality
+        // Enter login credentials and click login button
+        WebElement emailInput = driver.findElement(By.id("email"));
+        WebElement passwordInput = driver.findElement(By.id("pass"));
+        emailInput.sendKeys("farapix@yahoo.com");
+        passwordInput.sendKeys("Bybanu1990@facebook");
+        WebElement loginButton = driver.findElement(By.xpath("//button[@name='login']"));
+        loginButton.click();
+
+         // Verify that user is logged in and redirected to their profile page
+        String expectedUrl = "https://www.facebook.com/?sk=welcome";
+        String actualUrl = driver.getCurrentUrl();
+        if (actualUrl.equals(expectedUrl)) {
+            System.out.println("Login successful");
+        } else {
+            System.out.println("Login failed");
+        }
+
+        // Redirect to the profile page
+        driver.get("https://www.facebook.com/me");
+        System.out.println("Redirected to profile page");
+
+        /*// Click create post button, enter text and click post button
+        WebElement createPostButton = driver.findElement(By.xpath("//span[text()=\"What's on your mind\"]"));
+        createPostButton.click();
+        System.out.println("Clicked on the first posting field ");*/
+
+        //Post from the homepage not from profile page
+       WebElement createPostButton = driver.findElement(By.xpath("//span[contains(text(), \"What's on your mind\")]"));
+        createPostButton.click();
+        System.out.println("Clicked on the first posting field ");
+        Thread.sleep(5000);
+
+        JavascriptExecutor executor = (JavascriptExecutor)driver;
+
+        // Click on the text field
+        WebElement createPostButton2 = driver.findElement(By.xpath("//div[@class='xzsf02u x1a2a7pz x1n2onr6 x14wi4xw x9f619 x1lliihq x5yr21d xh8yej3 notranslate']"));
+        executor.executeScript("arguments[0].click();", createPostButton2);
+        System.out.println("Clicked on the second posting field ");
+        Thread.sleep(5000);
+
+        //Insert the text
+        createPostButton2.sendKeys("This is a test post");
+        System.out.println("Text inserted ");
+        Thread.sleep(5000);
+
+
+     /*   // Click the Post button V1
+        WebElement createPostButton3 = driver.findElement(By.xpath("//span[contains(text(), \"Post\")]"));
+        createPostButton3.click();
+        System.out.println("Post button pressed");
+        Thread.sleep(5000);*/
+
+      /*  // Click the Post button V2
+        // Wait for the Post button to become clickable
+        WebElement createPostButton3 = new WebDriverWait(driver, 10)
+                .until(ExpectedConditions.elementToBeClickable(By.xpath("//span[contains(text(), \"Post\")]")));
+        // Click the Post button
+        createPostButton3.click();
+        System.out.println("Post button pressed");*/
+
+        //Click the Post button V3
+        /* WebElement createPostButton3 = driver.findElement(By.xpath("//span[contains(text(), \"Post\")]"));
+
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        WebElement element = wait.until(ExpectedConditions.elementToBeClickable(createPostButton3));
+        element.click();
+        System.out.println("Post button pressed");*/
+
+        //Click the Post button V4
+        /*WebElement createPostButton4 = driver.findElement(By.xpath("//button[@name='Post']"));
+        Actions actions = new Actions(driver);
+        actions.moveToElement(createPostButton4).click().perform();
+        System.out.println("Post button pressed");*/
+
+        //Click the Post button v5
+        // switch to iframe by index
+       /* driver.switchTo().frame(0);
+        Thread.sleep(1000);
+// click the element inside the iframe
+        WebElement postButton = driver.findElement(By.xpath("//span[contains(@class, 'x1lliihq') and contains(text(), 'Post')]"));
+        postButton.click();
+
+
+// switch back to default content
+        driver.switchTo().defaultContent();*/
+
+        //Click the Post Button v6
+        WebElement postButton = driver.findElement(By.cssSelector("[aria-label='Post']"));
+        postButton.click();
+
+
+        Thread.sleep(5000);
+        driver.get("https://www.facebook.com/me");
+        System.out.println("Redirected to profile page");
+
+
+        // Wait for the post to be visible on the page
+        WebDriverWait wait1 = new WebDriverWait(driver, 5);
+        WebElement postContent = wait1.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(),'This is a test post')]")));
+
+        String postText = postContent.getText();
+        if (postText.equals("This is a test post")) {
+            System.out.println("Post successful");
+        } else {
+            System.out.println("Post failed");
+        }
+
+
+        /*// Verify that post is successfully published and displayed on user's timeline
+        WebElement postContent = driver.findElement(By.xpath("//div[contains(text(),'This is a test post')]"));
+        String postText = postContent.getText();
+        if (postText.equals("This is a test post")) {
+            System.out.println("Post successful");
+        } else {
+            System.out.println("Post failed");
+        }*/
+
+// Close the browser
+        driver.quit();
+    }
+}
